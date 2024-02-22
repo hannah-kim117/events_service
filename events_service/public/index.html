@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Search</title>
+  </head>
+  <body>
+    <h1>Search for Events:</h1>
+    <form id="eventSearchForm">
+      <label for="lat">Latitude:</label>
+      <input type="text" id="lat" name="lat" >
+      <label for="lon">Longitude:</label>
+      <input type="text" id="lon" name="lon" >
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city" >
+      <label for="state">State:</label>
+      <input type="text" id="state" name="state" >
+      <button type="submit">Search</button>
+    </form>
+
+    <div id="eventsList"></div>
+
+    <script>
+        document.getElementById('eventSearchForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const city = document.getElementById('city').value;
+            const state = document.getElementById('state').value;
+            const lat = document.getElementById('lat').value;
+            const lon = document.getElementById('lon').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/events', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ lat, lon, city, state })
+                });
+
+                const events = await response.json();
+                displayEvents(events);
+            } catch (error) {
+                console.error('There was an error fetching events:', error);
+            }
+        });
+
+        function displayEvents(events) {
+          const eventsList = document.getElementById('eventsList');
+          eventsList.innerHTML = '';
+
+          events.forEach(event => {
+          const eventDiv = document.createElement('div');
+
+          // more readable format of date and time using am/pm
+          const eventDate = new Date(event.datetime_local);
+          const formattedDate = eventDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+          const formattedTime = eventDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+
+          eventDiv.innerHTML = `
+          <h2>${event.title}</h2>
+          <p>${formattedDate} ${formattedTime}</p>
+          <p>Location: ${event.venue.name} (${event.venue.city}, ${event.venue.state})</p>
+          `;  
+          eventsList.appendChild(eventDiv);
+           });
+        }
+
+    </script>
+  </body>
+</html>
