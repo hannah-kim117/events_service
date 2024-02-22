@@ -66,5 +66,5 @@ The backend will respond with a JSON array containing event data based on the pr
 ```
 
 ## UML Diagram
-![alt text](image.png)
+![alt text](C:\Users\khg\Documents\OSU_postbacc\CS_361)
 
